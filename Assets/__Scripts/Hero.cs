@@ -47,4 +47,17 @@ public class Hero : MonoBehaviour {
 		// rotate the ship to make it feel more dynamic
 		transform.rotation =Quaternion.Euler(yAxis*pitchMult, xAxis*rollMult,0);
 	}
+
+	void OnTriggerEnter(Collider other) {
+		//Find the tag of other.gameObject or its parent GameObjects.
+		GameObject go = Utils.FindTaggedParent (other.gameObject);
+		//If there is a parent with a tag.
+		if (go != null) {
+			//Announce it.
+			print ("Triggered: " + go.name);
+		} else {
+			//otherwise announce the original other.gameObject.
+			print ("Triggered: " + other.gameObject.name); 
+		}
+	}
 }
