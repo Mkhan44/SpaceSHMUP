@@ -8,19 +8,37 @@ public class Enemy : MonoBehaviour {
 	public float health = 10;
 	public int score = 100; //Points earned for destroying this enemy.
 
+	public int showDamageForFrames = 2; //# Frames to show damage.
+
 	public bool ___________;
+
+	public Color[] originalColors;
+	public Material[] materials; //All the materials of this & its children.
+	public int remainingDamageFrames = 0; //Damage frames left.
+
 
 	public Bounds bounds; //The bounds of this and its children.
 	public Vector3 boundsCenterOffset; // Dist of bounds.center from position.
 
 
 	void Awake() {
+		materials = Utils.GetAllMaterials (gameObject);
+		originalColors = new Color[materials.Length];
+		for (int i=0; i<materials.Length; i++) {
+			originalColors[i] = materials[i].color;
+		}
 		InvokeRepeating ("CheckOffscreen", 0f, 2f);
 	}
 
 	// Update is called once per frame
 	void Update () {
-		Move ();	
+		Move ();
+		if (remainingDamageFrames > 0) {
+			remainingDamageFrames--;
+			if(remainingDamageFrames == 0 ) {
+				UnShowDamage();
+			}
+		}
 	}
 
 	public virtual void Move() {
@@ -58,6 +76,44 @@ public class Enemy : MonoBehaviour {
 			//Then destroy it.
 				Destroy (this.gameObject);
 			}
+		}
+	}
+
+	void OnCollisionEnter(Collision coll) {
+		GameObject other = coll.gameObject;
+		switch(other.tag) {
+		case "ProjectileHero":
+				Projectile p = other.GetComponent<Projectile>();
+			//Enemies don't take damage unless they're on screen.
+			//This stops the player from shooting them before they are visible.
+			bounds.center = transform.position + boundsCenterOffset;
+			if(bounds.extents == Vector3.zero || Utils.ScreenBoundsCheck(bounds, BoundsTest.offScreen) != Vector3.zero) {
+				Destroy (other);
+				break;
+			}
+			//Hurt this enemy.
+			ShowDamage();
+			//Get the damage amount from the Projectile.type & Main.W_DEFS
+			health -= Main.W_DEFS[p.Types].damageOnHit;
+			if(health <=0) {
+			//Destroy this enemy.
+				Destroy (this.gameObject);
+			}
+			Destroy (other);
+			break;
+		}
+	}
+
+	void ShowDamage() {
+	foreach (Material m in materials) {
+			m.color = Color.red;
+		}
+		remainingDamageFrames = showDamageForFrames;
+	}
+
+	void UnShowDamage() {
+		for (int i=0; i<materials.Length; i++) {
+			materials[i].color = originalColors[i];
 		}
 	}
 

@@ -82,7 +82,7 @@ public class Weapon : MonoBehaviour {
 
 	public void Fire() {
 	//If this.gameObject is inactive, return.
-		if (!gameObject.activeInHierarcy)return;
+		if (!gameObject.activeInHierarchy)return;
 		//If it hasn't been enough time between shots, return.
 		if (Time.time - lastShot < def.delayBetweenShots) {
 			return;
@@ -109,7 +109,7 @@ public class Weapon : MonoBehaviour {
 		GameObject go = Instantiate (def.projectilePrefab) as GameObject;
 		if (transform.parent.gameObject.tag == "Hero") {
 			go.tag = "ProjectileHero";
-			go.layer = LayerMask.GetMask.NameToLayer ("ProjectileHero");
+			go.layer = LayerMask.NameToLayer ("ProjectileHero");
 		} else {
 			go.tag = "ProjectileEnemy";
 			go.layer = LayerMask.NameToLayer ("ProjectileHero");
