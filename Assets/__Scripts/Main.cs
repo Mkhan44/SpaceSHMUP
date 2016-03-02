@@ -12,6 +12,12 @@ public class Main : MonoBehaviour {
 	public float enemySpawnPerSecond = 0.5f; //# enemies/second.
 	public float enemySpawnPadding = 1.5f; //Padding for position.
 	public WeaponDefinition[] weaponDefinitions;
+	public GameObject prefabPowerUp;
+	public WeaponType[] powerUpFrequency = new WeaponType[] {
+							WeaponType.blaster, WeaponType.blaster,
+							WeaponType.spread,
+							WeaponType.shield
+	};
 
 	public bool ___________;
 
@@ -79,5 +85,27 @@ public class Main : MonoBehaviour {
 		Application.LoadLevel ("_Scene_0");
 	}
 
+	public void ShipDestroyed(Enemy e) {
+	//Potentially generate a PowerUp
+		if (Random.value <= e.powerUpDropChance) {
+		//Random.value generates a value between 0 & 1 (though never == 1)
+			//If the e.powerUpDropChance is 0.50f, a PowerUp will be generated
+			//50% of the time. for testing, it's now set to 1f.
+
+			//Choose which powerUp to pick
+			//Pick one from the possibilities in powerUpFrequency
+			int ndx = Random.Range (0, powerUpFrequency.Length);
+			WeaponType puType = powerUpFrequency[ndx];
+
+			//Spawn a PowerUp
+			GameObject go = Instantiate(prefabPowerUp) as GameObject;
+			PowerUp pu = go.GetComponent<PowerUp>();
+			//Set it to the proper WEaponType.
+			pu.SetType (puType);
+
+			//Set it to the position of the destroyed ship.
+			pu.transform.position = e.transform.position;
+		}
+	}
 
 }
