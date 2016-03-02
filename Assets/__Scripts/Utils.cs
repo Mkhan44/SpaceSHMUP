@@ -63,7 +63,7 @@ public class Utils : MonoBehaviour
 	
 	//function used by camBound property and also may be called directly
 	
-	public static void SetCameraBounds(Camera cam = null) {
+	public static void SetCameraBounds(Camera cam=null) {
 		// use the main camera as default if none passed in.
 		if (cam == null)
 			cam = Camera.main;
